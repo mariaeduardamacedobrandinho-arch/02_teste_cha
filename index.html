@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Inteligente</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Cabeçalho moderno com status online -->
+    <header class="chat-header">
+      <div class="bot-info">
+        <div class="avatar">🤖</div>
+        <div>
+          <h3>Assistente Virtual</h3>
+          <span id="status">Online agora</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="btn-limpar" title="Limpar conversa">🗑️</button>
+        <button id="btn-tema" title="Mudar tema">🌓</button>
+      </div>
+    </header>
+
+    <!-- Área onde as mensagens aparecem -->
+    <main id="chat-area">
+      <ul id="lista-mensagens"></ul>
+    </main>
+
+    <!-- Barra de digitação -->
+    <form id="form-chat" class="chat-input-area">
+      <input 
+        type="text" 
+        id="campo-texto" 
+        placeholder="Digite algo (ex: oi, horas, piada, ajuda)..." 
+        autocomplete="off" 
+        required
+      />
+      <button type="submit" id="btn-enviar">➤</button>
+    </form>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
