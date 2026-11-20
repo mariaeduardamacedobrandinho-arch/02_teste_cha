@@ -3,42 +3,225 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat Inteligente</title>
+  <title>FanficChat - Login Seguro</title>
   <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
-  <div class="app-container">
-    <!-- Cabeçalho moderno com status online -->
-    <header class="chat-header">
-      <div class="bot-info">
-        <div class="avatar">🤖</div>
-        <div>
-          <h3>Assistente Virtual</h3>
-          <span id="status">Online agora</span>
+
+  <!-- SIMULADOR DE NOTIFICAÇÃO DE E-MAIL E SMS NO CELULAR -->
+  <div id="notificacao-celular" class="notif-push escondido">
+    <div class="notif-header">
+      <span id="notif-tipo">📩 SMS / E-mail</span>
+      <small>agora</small>
+    </div>
+    <p id="notif-texto">Seu código chegou!</p>
+  </div>
+
+  <!-- TELA 1: LOGIN E CADASTRO COM SENHA -->
+  <div id="tela-login" class="login-overlay">
+    <div class="login-card">
+      <div class="login-logo">📖💘</div>
+      <h2>FanficChat</h2>
+      <p id="subtitulo-login">Entre ou crie sua conta para jogar</p>
+      
+      <form id="form-login">
+        <input type="text" id="login-nome" placeholder="Seu nome (ex: duda)" required>
+        <input type="email" id="login-email" placeholder="Seu e-mail" required>
+        <input type="tel" id="login-numero" placeholder="Seu número (ex: (85) 99876-5432)" required>
+        <input type="password" id="login-senha" placeholder="Sua senha" required>
+        <button type="submit" id="btn-entrar">Entrar / Criar Conta</button>
+      </form>
+
+      <p id="erro-login" class="erro-texto escondido"></p>
+      <button type="button" id="btn-esqueci-senha" class="link-esqueci escondido">🔑 Esqueci minha senha (Enviar por E-mail e SMS)</button>
+
+      <!-- CAIXA DE REDEFINIÇÃO DE SENHA -->
+      <div id="box-recuperar" class="box-recuperar escondido">
+        <input type="text" id="input-codigo-rec" placeholder="Digite o código recebido no SMS/E-mail">
+        <input type="password" id="input-nova-senha" placeholder="Digite a nova senha">
+        <button type="button" id="btn-salvar-nova-senha" class="btn-salvar">Salvar Nova Senha</button>
+      </div>
+    </div>
+  </div>
+  <!-- TELA 2: APP CELULAR -->
+  <div id="app-zap" class="zap-container escondido">
+    
+    <section id="tela-contatos" class="tela-mobile">
+      <header class="top-header">
+        <div class="user-profile">
+          <div id="avatar-usuario" class="avatar-user clicavel" title="Mudar sua foto">💖</div>
+          <input type="file" id="input-foto-usuario" accept="image/*" class="escondido">
+          <div>
+            <strong id="perfil-nome">Usuário</strong>
+            <small id="perfil-badge">Autor(a) & Leitor(a)</small>
+          </div>
         </div>
-      </div>
-      <div class="header-actions">
-        <button id="btn-limpar" title="Limpar conversa">🗑️</button>
-        <button id="btn-tema" title="Mudar tema">🌓</button>
-      </div>
-    </header>
+        <div class="acoes-topo">
+          <button id="btn-abrir-criar" title="Escrever Nova Fanfic">✍️</button>
+          <button id="btn-tema" title="Mudar Tema">🌓</button>
+        </div>
+      </header>
 
-    <!-- Área onde as mensagens aparecem -->
-    <main id="chat-area">
-      <ul id="lista-mensagens"></ul>
-    </main>
+      <div class="search-bar">
+        <input type="text" id="busca-contato" placeholder="Buscar personagem ou fanfic...">
+      </div>
 
-    <!-- Barra de digitação -->
-    <form id="form-chat" class="chat-input-area">
-      <input 
-        type="text" 
-        id="campo-texto" 
-        placeholder="Digite algo (ex: oi, horas, piada, ajuda)..." 
-        autocomplete="off" 
-        required
-      />
-      <button type="submit" id="btn-enviar">➤</button>
-    </form>
+      <ul id="lista-contatos" class="contatos-list"></ul>
+    </section>
+
+    <section id="tela-chat" class="tela-mobile escondido">
+      <header class="top-header">
+        <div class="contato-atual-info">
+          <button id="btn-voltar" class="btn-voltar">←</button>
+          <div id="chat-avatar" class="avatar-contato" title="Foto do personagem">🌸</div>
+          <input type="file" id="input-foto-personagem" accept="image/*" class="escondido">
+          <div>
+            <h4 id="chat-nome">Personagem</h4>
+            <span id="chat-autor-tag">Criado por: Sistema</span>
+          </div>
+        </div>
+        <div class="acoes-topo">
+          <button id="btn-add-capitulo" class="escondido" title="Adicionar mais capítulos">➕📖</button>
+          <button id="btn-reiniciar" title="Recomeçar história">🔄</button>
+        </div>
+      </header>
+
+      <div id="area-mensagens" class="mensagens-bg">
+        <div class="wallpaper-overlay"></div>
+        <ul id="lista-mensagens"></ul>
+      </div>
+
+      <div id="caixa-escolhas" class="escolhas-container escondido"></div>
+
+      <form id="form-mensagem" class="chat-footer">
+        <input type="text" id="input-mensagem" placeholder="Ou escreva sua própria resposta..." autocomplete="off">
+        <button type="submit" id="btn-enviar">➤</button>
+      </form>
+    </section>
+
+    <div id="modal-criar" class="modal-overlay escondido">
+      <div class="modal-card">
+        <h3>Nova Fanfic Interativa ✨</h3>
+        <button type="button" id="btn-gerar-ideia" class="btn-ideia">💡 Me dê uma ideia de história!</button>
+        <p id="texto-ideia" class="dica-ideia escondido"></p>
+
+        <form id="form-criar-personagem">
+          <input type="text" id="novo-nome" placeholder="Nome do Personagem" required>
+          <input type="text" id="novo-categoria" placeholder="Universo (Anime, K-Pop, Série)" required>
+          <label class="label-foto">Foto de Perfil (será o papel de parede):</label>
+          <input type="file" id="novo-foto" accept="image/*">
+          
+          <div id="container-capitulos">
+            <div class="bloco-capitulo">
+              <strong>Capítulo 1</strong>
+              <input type="text" class="cap-fala" placeholder="Fala (use {nome} p/ leitor)" required>
+              <input type="text" class="cap-op1" placeholder="Opção de escolha 1">
+              <input type="text" class="cap-op2" placeholder="Opção de escolha 2">
+            </div>
+          </div>
+
+          <button type="button" id="btn-mais-capitulo" class="btn-secundario">+ Adicionar Outro Capítulo</button>
+
+          <div class="modal-botoes">
+            <button type="button" id="btn-fechar-criar" class="btn-cancelar">Cancelar</button>
+            <button type="submit" class="btn-salvar">Publicar Fanfic</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
+  <!-- TELA 2: APP CELULAR -->
+  <div id="app-zap" class="zap-container escondido">
+    
+    <section id="tela-contatos" class="tela-mobile">
+      <header class="top-header">
+        <div class="user-profile">
+          <div id="avatar-usuario" class="avatar-user clicavel" title="Mudar sua foto">💖</div>
+          <input type="file" id="input-foto-usuario" accept="image/*" class="escondido">
+          <div>
+            <strong id="perfil-nome">Usuário</strong>
+            <small id="perfil-badge">Autor(a) & Leitor(a)</small>
+          </div>
+        </div>
+        <div class="acoes-topo">
+          <button id="btn-abrir-criar" title="Escrever Nova Fanfic">✍️</button>
+          <button id="btn-tema" title="Mudar Tema">🌓</button>
+        </div>
+      </header>
+
+      <div class="search-bar">
+        <input type="text" id="busca-contato" placeholder="Buscar personagem ou fanfic...">
+      </div>
+
+      <ul id="lista-contatos" class="contatos-list"></ul>
+    </section>
+
+    <section id="tela-chat" class="tela-mobile escondido">
+      <header class="top-header">
+        <div class="contato-atual-info">
+          <button id="btn-voltar" class="btn-voltar">←</button>
+          <div id="chat-avatar" class="avatar-contato" title="Foto do personagem">🌸</div>
+          <input type="file" id="input-foto-personagem" accept="image/*" class="escondido">
+          <div>
+            <h4 id="chat-nome">Personagem</h4>
+            <span id="chat-autor-tag">Criado por: Sistema</span>
+          </div>
+        </div>
+        <div class="acoes-topo">
+          <button id="btn-add-capitulo" class="escondido" title="Adicionar mais capítulos">➕📖</button>
+          <button id="btn-reiniciar" title="Recomeçar história">🔄</button>
+        </div>
+      </header>
+
+      <div id="area-mensagens" class="mensagens-bg">
+        <div class="wallpaper-overlay"></div>
+        <ul id="lista-mensagens"></ul>
+      </div>
+
+      <div id="caixa-escolhas" class="escolhas-container escondido"></div>
+
+      <form id="form-mensagem" class="chat-footer">
+        <input type="text" id="input-mensagem" placeholder="Ou escreva sua própria resposta..." autocomplete="off">
+        <button type="submit" id="btn-enviar">➤</button>
+      </form>
+    </section>
+
+    <div id="modal-criar" class="modal-overlay escondido">
+      <div class="modal-card">
+        <h3>Nova Fanfic Interativa ✨</h3>
+        <button type="button" id="btn-gerar-ideia" class="btn-ideia">💡 Me dê uma ideia de história!</button>
+        <p id="texto-ideia" class="dica-ideia escondido"></p>
+
+        <form id="form-criar-personagem">
+          <input type="text" id="novo-nome" placeholder="Nome do Personagem" required>
+          <input type="text" id="novo-categoria" placeholder="Universo (Anime, K-Pop, Série)" required>
+          <label class="label-foto">Foto de Perfil (será o papel de parede):</label>
+          <input type="file" id="novo-foto" accept="image/*">
+          
+          <div id="container-capitulos">
+            <div class="bloco-capitulo">
+              <strong>Capítulo 1</strong>
+              <input type="text" class="cap-fala" placeholder="Fala (use {nome} p/ leitor)" required>
+              <input type="text" class="cap-op1" placeholder="Opção de escolha 1">
+              <input type="text" class="cap-op2" placeholder="Opção de escolha 2">
+            </div>
+          </div>
+
+          <button type="button" id="btn-mais-capitulo" class="btn-secundario">+ Adicionar Outro Capítulo</button>
+
+          <div class="modal-botoes">
+            <button type="button" id="btn-fechar-criar" class="btn-cancelar">Cancelar</button>
+            <button type="submit" class="btn-salvar">Publicar Fanfic</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
   </div>
 
   <script src="main.js"></script>
