@@ -9,7 +9,7 @@ if (typeof window === 'undefined') {
   const db = mysql.createConnection({
     host: '127.0.0.1',
     user: 'root',
-    password: '', // <-- COLOQUE AQUI A SENHA DO SEU MYSQL WORKBENCH
+    password: 'Duda2004',
     database: 'meu_banco'
   });
 
@@ -224,17 +224,33 @@ if (typeof window !== 'undefined') {
       }
     ];
 
-    let personagens = JSON.parse(localStorage.getItem('fanfic_personagens')) || fanficsPadrao;
+    const API_URL = window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
+let personagens = fanficsPadrao;
 
-    function salvarDados() {
-      try {
-        localStorage.setItem('fanfic_personagens', JSON.stringify(personagens));
-        return true;
-      } catch (erro) {
-        alert('Erro ao salvar: a imagem escolhida é muito pesada! Tente publicar sem foto ou com uma imagem menor.');
-        return false;
-      }
+// Carrega as histórias do MySQL assim que o app ou navegador abre
+fetch(`${API_URL}/api/dados/fanfic_personagens`)
+  .then(res => res.json())
+  .then(dadosServidor => {
+    if (dadosServidor && Array.isArray(dadosServidor)) {
+      personagens = dadosServidor;
+      renderizarContatos(personagens);
     }
+  })
+  .catch(err => console.error('Erro ao buscar histórias:', err));
+
+function salvarDados() {
+  try {
+    fetch(`${API_URL}/api/dados/fanfic_personagens`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(personagens)
+    });
+    return true;
+  } catch (erro) {
+    alert('Erro ao salvar no servidor!');
+    return false;
+  }
+}
 
     function podeEditarPersonagem(p) {
       if (!p) return false;
@@ -251,27 +267,29 @@ if (typeof window !== 'undefined') {
       }
     }
 
-    function lerImagem(inputFile, callback) {
-      const arq = inputFile.files;
-      if (!arq) return;
-function lerImagem(arquivo) {
-  // Evita o erro caso nenhum arquivo tenha sido selecionado
-  if (!arquivo) {
-    return Promise.resolve(null); // ou execute a lógica padrão sem imagem
+    function lerImagem(arquivoOuLista, callback) {
+  let arquivo = arquivoOuLista;
+  if (arquivoOuLista && arquivoOuLista.files) {
+    arquivo = arquivoOuLista.files[0];
+  } else if (arquivoOuLista instanceof FileList) {
+    arquivo = arquivoOuLista[0];
+  }
+
+  if (!arquivo || !(arquivo instanceof Blob)) {
+    if (typeof callback === 'function') callback(null);
+    return Promise.resolve(null);
   }
 
   return new Promise((resolve, reject) => {
     const leitor = new FileReader();
-    leitor.onload = () => resolve(leitor.result);
+    leitor.onload = (e) => {
+      if (typeof callback === 'function') callback(e.target.result);
+      resolve(e.target.result);
+    };
     leitor.onerror = () => reject(leitor.error);
     leitor.readAsDataURL(arquivo);
   });
 }
-
-      const reader = new FileReader();
-      reader.onload = (e) => callback(e.target.result);
-      reader.readAsDataURL(arq);
-    }
 
     avatarUsuarioEl.addEventListener('click', () => inputFotoUsuario.click());
     inputFotoUsuario.addEventListener('change', () => {
@@ -328,111 +346,179 @@ function lerImagem(arquivo) {
     document.getElementById('btn-fechar-criar').addEventListener('click', () => modalCriar.classList.add('escondido'));
 
     // Função centralizada de publicação (funciona no submit e no clique direto)
-    function publicarNovaHistoria(e) {
-      if (e) e.preventDefault();
+   let modoAdicaoCapitulos = false;
 
-      const inputNome = document.getElementById('novo-nome');
-      const inputCat = document.getElementById('novo-categoria');
-      const nome = inputNome ? inputNome.value.trim() : '';
-      const categoria = inputCat ? inputCat.value.trim() : 'Fanfic';
+function prepararModalCriacao(apenasCapitulos = false) {
+    modoAdicaoCapitulos = apenasCapitulos;
+    const form = document.getElementById('form-criar-personagem');
+    const tituloModal = modalCriar.querySelector('h3');
+    const btnIdeia = document.getElementById('btn-gerar-ideia');
+    const inputNome = document.getElementById('novo-nome');
+    const inputCat = document.getElementById('novo-categoria');
+    const labelFoto = modalCriar.querySelector('.label-foto');
+    const inputFoto = document.getElementById('novo-foto');
+    const containerCaps = document.getElementById('container-capitulos');
 
-      if (!nome) {
-        alert('Por favor, digite o nome do personagem antes de publicar!');
-        return;
+    if (form) form.reset();
+
+    if (apenasCapitulos && personagemAtivo) {
+      if (tituloModal) tituloModal.textContent = `Novos Capítulos: ${personagemAtivo.nome || 'Fanfic'} ✨`;
+      if (btnIdeia) btnIdeia.classList.add('escondido');
+      if (inputNome) {
+        inputNome.value = personagemAtivo.nome || '';
+        inputNome.readOnly = false; // Liberado para editar se quiser
       }
-
-      const blocos = document.querySelectorAll('.bloco-capitulo');
-      const capitulos = [];
-
-      blocos.forEach((b) => {
-        const falaEl = b.querySelector('.cap-fala');
-        const op1El = b.querySelector('.cap-op1');
-        const op2El = b.querySelector('.cap-op2');
-
-        const fala = falaEl ? falaEl.value.trim() : '';
-        const op1 = op1El ? op1El.value.trim() : '';
-        const op2 = op2El ? op2El.value.trim() : '';
-
-        if (fala) {
-          capitulos.push({
-            fala,
-            opcoes: [op1, op2].filter(x => x !== '')
-          });
-        }
-      });
-
-      if (capitulos.length === 0) {
-        alert('Escreva pelo menos a primeira fala do personagem no Capítulo 1!');
-        return;
+      if (inputCat) {
+        inputCat.value = personagemAtivo.categoria || '';
+        inputCat.readOnly = false; // Liberado para editar se quiser
       }
+      if (labelFoto) labelFoto.classList.add('escondido');
+      if (inputFoto) inputFoto.classList.add('escondido');
 
-      const concluir = (fotoB64) => {
-        const novaHistoria = {
-          id: 'fic_' + Date.now(),
-          nome,
-          categoria: categoria || 'Geral',
-          criadorEmail: usuarioAtual.email,
-          criadorNome: usuarioAtual.nome || 'Autor(a)',
-          avatar: '💘',
-          foto: fotoB64 || '',
-          etapa: 0,
-          historico: [],
-          capitulos
-        };
+      const proximoNum = (personagemAtivo.capitulos ? personagemAtivo.capitulos.length : 0) + 1;
+      if (containerCaps) {
+        containerCaps.innerHTML = `
+          <div class="bloco-capitulo">
+            <strong>Capítulo ${proximoNum}</strong>
+            <input type="text" class="cap-fala" placeholder="Fala (use {nome} p/ leitor)" required>
+            <input type="text" class="cap-op1" placeholder="Opção de escolha 1">
+            <input type="text" class="cap-op2" placeholder="Opção de escolha 2">
+          </div>
+        `;
+      }
+    } else {
+      if (tituloModal) tituloModal.textContent = 'Nova Fanfic Interativa ✨';
+      if (btnIdeia) btnIdeia.classList.remove('escondido');
+      if (inputNome) { inputNome.value = ''; inputNome.readOnly = false; }
+      if (inputCat) { inputCat.value = ''; inputCat.readOnly = false; }
+      if (labelFoto) labelFoto.classList.remove('escondido');
+      if (inputFoto) inputFoto.classList.remove('escondido');
 
-        personagens.unshift(novaHistoria);
-
-        if (salvarDados()) {
-          // Garante que a lista de contatos apareça na tela com a nova história no topo
-          telaChat.classList.add('escondido');
-          telaContatos.classList.remove('escondido');
-          renderizarContatos(personagens);
-          
-          const form = document.getElementById('form-criar-personagem');
-          if (form) form.reset();
-          modalCriar.classList.add('escondido');
-          alert('História publicada com sucesso! Ela já está no topo dos seus contatos.');
-        } else {
-          personagens.shift();
-        }
-      };
-
-      const inputFoto = document.getElementById('novo-foto');
-      if (inputFoto && inputFoto.files && inputFoto.files) {
-        lerImagem(inputFoto, concluir);
-      } else {
-        concluir('');
+      if (containerCaps) {
+        containerCaps.innerHTML = `
+          <div class="bloco-capitulo">
+            <strong>Capítulo 1</strong>
+            <input type="text" class="cap-fala" placeholder="Fala (use {nome} p/ leitor)" required>
+            <input type="text" class="cap-op1" placeholder="Opção de escolha 1">
+            <input type="text" class="cap-op2" placeholder="Opção de escolha 2">
+          </div>
+        `;
       }
     }
+  }
 
-    const formCriar = document.getElementById('form-criar-personagem');
-    if (formCriar) {
-      formCriar.addEventListener('submit', publicarNovaHistoria);
-      // Garante o clique mesmo se o botão dentro do form não tiver type="submit"
-      const btnSubmit = formCriar.querySelector('button[type="submit"], #btn-publicar, .btn-publicar');
-      if (btnSubmit) {
-        btnSubmit.addEventListener('click', (e) => {
-          if (btnSubmit.type !== 'submit') publicarNovaHistoria(e);
+   const btnAbrirCriar = document.getElementById('btn-abrir-criar');
+  if (btnAbrirCriar) {
+    btnAbrirCriar.addEventListener('click', () => prepararModalCriacao(false));
+  }
+
+  function publicarNovaHistoria(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }
+
+    const blocos = document.querySelectorAll('.bloco-capitulo');
+    const capitulos = [];
+
+    blocos.forEach((b) => {
+      const fala = b.querySelector('.cap-fala')?.value.trim() || '';
+      const op1 = b.querySelector('.cap-op1')?.value.trim() || '';
+      const op2 = b.querySelector('.cap-op2')?.value.trim() || '';
+
+      if (fala) {
+        capitulos.push({
+          fala,
+          opcoes: [op1, op2].filter(x => x !== '')
         });
       }
-    }
-
-    btnAddCapitulo.addEventListener('click', () => {
-      if (!podeEditarPersonagem(personagemAtivo)) return;
-      const novaFala = prompt('Escreva a próxima fala do personagem (use {nome} para citar o leitor):');
-      if (!novaFala) return;
-      const op1 = prompt('Opção de escolha 1 para o leitor (ou deixe vazio):') || '';
-      const op2 = prompt('Opção de escolha 2 para o leitor (ou deixe vazio):') || '';
-
-      personagemAtivo.capitulos.push({
-        fala: novaFala,
-        opcoes: [op1, op2].filter(x => x !== '')
-      });
-      salvarDados();
-      alert('Novo capítulo adicionado!');
     });
 
-    function renderizarContatos(lista) {
+    if (capitulos.length === 0) {
+      alert('Escreva pelo menos a primeira fala do personagem!');
+      return;
+    }
+
+    const nomeDigitado = document.getElementById('novo-nome')?.value.trim() || '';
+    const catDigitada = document.getElementById('novo-categoria')?.value.trim() || '';
+
+    // Verifica se estamos adicionando capítulos em um personagem aberto OU se o criador já tem um personagem com esse exato nome
+    const alvoExistente = (modoAdicaoCapitulos && personagemAtivo)
+      ? personagemAtivo
+      : personagens.find(p => p.nome.toLowerCase() === nomeDigitado.toLowerCase() && p.criadorEmail === usuarioAtual.email);
+
+    if (alvoExistente) {
+      if (nomeDigitado) alvoExistente.nome = nomeDigitado;
+      if (catDigitada) alvoExistente.categoria = catDigitada;
+
+      alvoExistente.capitulos.push(...capitulos);
+
+      if (salvarDados()) {
+        renderizarContatos(personagens);
+        prepararModalCriacao(false);
+        modalCriar.classList.add('escondido');
+
+        if (personagemAtivo && personagemAtivo.id === alvoExistente.id) {
+          const chatNome = document.getElementById('chat-nome');
+          if (chatNome) chatNome.textContent = alvoExistente.nome;
+          renderizarMensagens();
+          avancarHistoria();
+        }
+        alert(`Novos capítulos adicionados em "${alvoExistente.nome}" com sucesso! ✨`);
+      }
+      return;
+    }
+
+    // Só chega aqui se for realmente um personagem inédito
+    const concluir = (fotoB64) => {
+      const novaHistoria = {
+        id: 'fic_' + Date.now(),
+        nome: nomeDigitado,
+        categoria: catDigitada,
+        criadorEmail: usuarioAtual.email,
+        criadorNome: usuarioAtual.nome || 'Autor(a)',
+        avatar: '✨',
+        foto: fotoB64 || '',
+        etapa: 0,
+        historico: [],
+        capitulos
+      };
+
+      personagens.unshift(novaHistoria);
+
+      if (salvarDados()) {
+        telaChat.classList.add('escondido');
+        telaContatos.classList.remove('escondido');
+        renderizarContatos(personagens);
+
+        prepararModalCriacao(false);
+        modalCriar.classList.add('escondido');
+        alert('Novo personagem publicado com sucesso! ✨');
+      } else {
+        personagens.shift();
+      }
+    };
+
+    const inputFoto = document.getElementById('novo-foto');
+    if (inputFoto && inputFoto.files && inputFoto.files) {
+      lerImagem(inputFoto, concluir);
+    } else {
+      concluir('');
+    }
+  }
+
+  const formCriar = document.getElementById('form-criar-personagem');
+  if (formCriar) {
+    formCriar.onsubmit = publicarNovaHistoria;
+  }
+
+  btnAddCapitulo.onclick = () => {
+    if (!podeEditarPersonagem(personagemAtivo)) return;
+    prepararModalCriacao(true);
+    modalCriar.classList.remove('escondido');
+  };
+  
+  function renderizarContatos(lista) {
       listaContatos.innerHTML = '';
       lista.forEach((p) => {
         const av = p.foto ? `<img src="${p.foto}">` : p.avatar;
