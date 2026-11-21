@@ -518,23 +518,58 @@ function prepararModalCriacao(apenasCapitulos = false) {
     modalCriar.classList.remove('escondido');
   };
   
-  function renderizarContatos(lista) {
-      listaContatos.innerHTML = '';
-      lista.forEach((p) => {
-        const av = p.foto ? `<img src="${p.foto}">` : p.avatar;
-        const li = document.createElement('li');
-        li.className = 'contato-item';
-        li.innerHTML = `
-          <div class="avatar-contato">${av}</div>
-          <div class="contato-info">
-            <div class="contato-topo"><strong>${p.nome}</strong><span class="tag-categoria">${p.categoria}</span></div>
-            <p class="contato-previa">Por: ${p.criadorNome}</p>
-          </div>
-        `;
-        li.addEventListener('click', () => abrirChat(p));
-        listaContatos.appendChild(li);
-      });
-    }
+function renderizarContatos(lista) {
+  listaContatos.innerHTML = '';
+
+  lista.forEach((p) => {
+    const li = document.createElement('li');
+    li.className = 'card-fanfic';
+
+    // Usa a foto como capa do cartão
+    li.style.backgroundImage = p.foto
+      ? `url("${p.foto}")`
+      : 'linear-gradient(135deg, #2e1065, #0f0722)';
+
+    // Parte superior do cartão
+    const topo = document.createElement('div');
+    topo.className = 'card-fanfic-topo';
+
+    const selo = document.createElement('span');
+    selo.className = 'selo-categoria';
+    selo.textContent = p.categoria || 'Fanfic';
+    topo.appendChild(selo);
+
+    // Informações na parte inferior
+    const info = document.createElement('div');
+    info.className = 'card-fanfic-info';
+
+    const nome = document.createElement('strong');
+    nome.className = 'card-fanfic-nome';
+    nome.textContent = p.nome || 'Sem nome';
+
+    const sinopse = document.createElement('p');
+    sinopse.className = 'card-fanfic-sinopse';
+    sinopse.textContent = p.sinopse || 'Toque para começar esta história.';
+
+    const tags = document.createElement('div');
+    tags.className = 'card-tags';
+
+    const tag = document.createElement('span');
+    tag.textContent = p.categoria || 'Fanfic';
+    tags.appendChild(tag);
+
+    const autor = document.createElement('span');
+    autor.className = 'card-fanfic-status';
+    autor.textContent = `Por: ${p.criadorNome || 'Autor(a)'}`;
+
+    info.append(nome, sinopse, tags, autor);
+    li.append(topo, info);
+
+    li.addEventListener('click', () => abrirChat(p));
+    listaContatos.appendChild(li);
+  });
+}
+
     // ==========================================================
     // PARTE 5: CHAT INTERATIVO E FECHAMENTO DO ARQUIVO
     // ==========================================================

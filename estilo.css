@@ -38,7 +38,7 @@ body { background: var(--bg-universo); color: var(--texto-luz); width: 100vw; he
 @keyframes descerNotif { from { transform: translateY(-40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
 /* LOGIN E RECUPERAÇÃO */
-.login-overlay { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; padding: 18px; }
+.box-recuperar { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--borda-neon); }
 .login-card {
   background: var(--painel-vidro); padding: 24px 20px; border-radius: 20px;
   width: 100%; border: 2px solid var(--borda-neon); text-align: center;
@@ -67,6 +67,7 @@ body.dark #form-login input, body.dark .modal-card input { background: #fff; col
   background: none; border: none; color: #38bdf8; font-size: 0.8rem;
   text-decoration: underline; cursor: pointer; margin-top: 8px;
 }
+
 .box-recuperar { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--borda-neon); }
 .zap-container, .tela-mobile {
   width: 100%; height: 100%; display: flex; flex-direction: column; background: var(--painel-vidro);
@@ -198,4 +199,490 @@ body.dark .wallpaper-overlay { background: rgba(255, 255, 255, 0.55); }
     margin: 0 auto !important;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7) !important;
   }
+}
+/* =========================================================
+   IDENTIDADE EXCLUSIVA FANFICCHAT (ESTILO LIVRO INTERATIVO)
+   ========================================================= */
+
+body {
+    background: radial-gradient(circle at top, #181030 0%, #090712 100%) !important;
+    color: #f8fafc;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* 1. VITRINE DE HISTÓRIAS (CARDS ESTILO CAPA DE WEBTOON) */
+.grid-personagens, #lista-historias, #lista-contatos {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px !important;
+    padding: 14px !important;
+    padding-bottom: 95px !important;
+}
+
+.card-fanfic {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    aspect-ratio: 3 / 4.2;
+    background-size: cover;
+    background-position: center;
+    background-color: #161229;
+    border: 1px solid rgba(167, 139, 250, 0.25);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(88, 28, 135, 0.25);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.card-fanfic:active {
+    transform: scale(0.97);
+    border-color: #ec4899;
+}
+
+/* Degradê roxo-escuro na base para leitura confortável */
+.card-fanfic::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, #0b0818 5%, rgba(15, 10, 32, 0.72) 48%, transparent 78%);
+    z-index: 1;
+}
+
+/* Selo superior exclusivo do FanficChat (Afinidade / Categoria) */
+.card-fanfic-topo {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+}
+
+.selo-categoria {
+    background: rgba(139, 92, 246, 0.85);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+}
+
+.card-fanfic-info {
+    position: relative;
+    z-index: 2;
+    padding: 12px;
+}
+
+.card-fanfic-nome {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 4px 0;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+}
+
+.card-fanfic-sinopse {
+    font-size: 0.76rem;
+    color: #cbd5e1;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.card-fanfic-status {
+    font-size: 0.68rem;
+    color: #f472b6;
+    font-weight: 600;
+}
+
+/* 2. MENU INFERIOR ESTILO VIDRO FOSCO (EXCLUSIVO FANFICCHAT) */
+.nav-inferior-fanfic {
+    position: fixed;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 390px;
+    background: rgba(24, 18, 48, 0.88);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(167, 139, 250, 0.25);
+    border-radius: 24px;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    z-index: 999;
+}
+
+.nav-item-fanfic {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 0.72rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.nav-item-fanfic.ativo {
+    color: #e879f9;
+    font-weight: 700;
+}
+
+/* 3. TELA DE LEITURA / CHAT IMERSIVO */
+#tela-chat {
+    background-size: cover !important;
+    background-position: center top !important;
+    position: relative;
+}
+
+#tela-chat::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, #090712 30%, rgba(13, 10, 26, 0.82) 68%, rgba(13, 10, 26, 0.45) 100%);
+    z-index: 0;
+    pointer-events: none;
+}
+
+#tela-chat > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Cartão "Prólogo" exclusivo (substitui o caixa verde do Emochi) */
+.box-prologo-fanfic {
+    background: rgba(30, 22, 58, 0.88);
+    backdrop-filter: blur(10px);
+    border-left: 4px solid #ec4899;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin: 10px 14px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.box-prologo-titulo {
+    color: #f472b6;
+    font-weight: 700;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
+}
+
+/* Balões de cena e diálogo */
+.balao-fanfic-ia {
+    background: rgba(22, 18, 42, 0.88);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(167, 139, 250, 0.18);
+    border-radius: 16px 16px 16px 4px;
+    padding: 12px 15px;
+    color: #f1f5f9;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    margin: 8px 14px;
+}
+
+.balao-fanfic-ia em, .acao-narracao {
+    color: #c4b5fd;
+    font-style: italic;
+}
+
+/* Barra de Afinidade */
+.barra-afinidade-box {
+    margin-top: 4px;
+    font-size: 0.72rem;
+    color: #f472b6;
+}
+
+.barra-afinidade-fundo {
+    width: 110px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 2px;
+}
+
+#barra-afinidade-progresso {
+    height: 100%;
+    background: linear-gradient(90deg, #ec4899, #8b5cf6);
+    transition: width 0.4s ease;
+}
+/* =========================================================
+   TELA DE LOGIN CINEMATOGRÁFICA (PREMIUM DARK GLASS)
+   ========================================================= */
+.login-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    background: radial-gradient(circle at 20% 20%, #24124d 0%, #090712 60%, #05040a 100%) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 20px !important;
+    z-index: 9999 !important;
+    overflow-y: auto !important;
+}
+
+.login-overlay.escondido {
+    display: none !important;
+}
+
+.login-glow-bg {
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(236, 72, 153, 0.28), rgba(139, 92, 246, 0.18), transparent 70%);
+    filter: blur(45px);
+    pointer-events: none;
+}
+
+.login-card-pro {
+    position: relative;
+    width: 100%;
+    max-width: 390px;
+    background: rgba(19, 15, 38, 0.78);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(167, 139, 250, 0.28);
+    border-radius: 26px;
+    padding: 32px 26px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    text-align: center;
+}
+
+.login-badge {
+    display: inline-block;
+    background: rgba(139, 92, 246, 0.18);
+    border: 1px solid rgba(167, 139, 250, 0.35);
+    color: #c4b5fd;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+}
+
+.login-logo {
+    font-size: 2.1rem;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    color: #ffffff;
+    margin: 0 0 6px 0;
+}
+
+.login-logo span {
+    background: linear-gradient(135deg, #f472b6, #a855f7);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.login-subtitulo {
+    font-size: 0.84rem;
+    color: #94a3b8;
+    line-height: 1.4;
+    margin: 0 0 22px 0;
+}
+
+.input-grupo {
+    text-align: left;
+    margin-bottom: 14px;
+}
+
+.input-grupo label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #cbd5e1;
+    margin-bottom: 5px;
+    margin-left: 4px;
+}
+
+.login-card-pro input, .box-recuperar input {
+    width: 100%;
+    box-sizing: border-box;
+    background: rgba(10, 8, 22, 0.85) !important;
+    border: 1px solid rgba(148, 163, 184, 0.22) !important;
+    border-radius: 14px !important;
+    padding: 12px 14px !important;
+    color: #f8fafc !important;
+    font-size: 0.9rem !important;
+    outline: none;
+    transition: all 0.25s ease;
+}
+
+.login-card-pro input:focus {
+    border-color: #c084fc !important;
+    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.22) !important;
+    background: rgba(15, 12, 34, 0.95) !important;
+}
+
+.login-card-pro input:-webkit-autofill,
+.login-card-pro input:-webkit-autofill:hover,
+.login-card-pro input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #f8fafc !important;
+    -webkit-box-shadow: 0 0 0px 1000px #0d0a1c inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+.btn-entrar-pro {
+    width: 100%;
+    margin-top: 10px;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%) !important;
+    color: #ffffff !important;
+    font-size: 0.98rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(236, 72, 153, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-entrar-pro:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(139, 92, 246, 0.5);
+}
+
+.btn-entrar-pro:active {
+    transform: scale(0.98);
+}
+
+.login-rodape {
+    margin: 14px 0 0 0;
+    font-size: 0.72rem;
+    color: #64748b;
+}
+/* =========================================================
+   CARTÕES DE HISTÓRIAS - NOVO ESTILO
+   ========================================================= */
+
+.card-fanfic,
+.card-estilo-referencia {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 16px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 16px;
+    overflow: hidden;
+    min-height: 260px;
+}
+
+/* Degradê escuro na parte inferior */
+.card-fanfic::after,
+.card-estilo-referencia::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.9) 0%,
+        rgba(0, 0, 0, 0.4) 45%,
+        transparent 100%
+    );
+    z-index: 0;
+}
+
+/* Conteúdo na frente da imagem e do degradê */
+.card-fanfic > *,
+.card-estilo-referencia > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* Tags de categorias */
+.card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.card-tags span {
+    background-color: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(4px);
+    color: #fff;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+/* ==================================================
+   NOVO VISUAL DOS CARTÕES DE FANFIC
+================================================== */
+
+#lista-contatos .card-fanfic {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 260px;
+    padding: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+/* Degradê escuro na parte inferior */
+#lista-contatos .card-fanfic::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.9) 0%,
+        rgba(0, 0, 0, 0.4) 45%,
+        transparent 100%
+    );
+    z-index: 1;
+}
+
+/* Conteúdo na frente do degradê */
+#lista-contatos .card-fanfic > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* Tags na parte inferior */
+.card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.card-tags span {
+    background-color: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(4px);
+    color: #fff;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 6px;
 }

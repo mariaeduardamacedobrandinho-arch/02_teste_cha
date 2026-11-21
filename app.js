@@ -1,18 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   // ==========================================================
-  // 1. SEU CÓDIGO DE TESTE DO ELECTRON (INTEGRADO COM SEGURANÇA)
-  // ==========================================================
-  const botaoTeste = document.querySelector('#btnTeste');
-  const mensagem = document.querySelector('#mensagem');
-
-  if (botaoTeste && mensagem) {
-    botaoTeste.addEventListener('click', () => {
-      mensagem.textContent = 'JavaScript funcionando no Electron!';
-    });
-  }
-
-  // ==========================================================
-  // 2. SISTEMA DE LOGIN E CHAT ESTILO WHATSAPP (WHATSLOVE)
+  // 1. ELEMENTOS DA TELA
   // ==========================================================
   const telaLogin = document.getElementById('tela-login');
   const formLogin = document.getElementById('form-login');
@@ -25,29 +13,40 @@ document.addEventListener('DOMContentLoaded', () => {
   const chatStatus = document.getElementById('chat-status');
   const listaMensagens = document.getElementById('lista-mensagens');
   const areaMensagens = document.getElementById('area-mensagens');
+  const telaChat = document.getElementById('tela-chat');
   const formMensagem = document.getElementById('form-mensagem');
   const inputMensagem = document.getElementById('input-mensagem');
   const btnEnviar = document.getElementById('btn-enviar');
-  const btnTema = document.getElementById('btn-tema');
   const btnReiniciar = document.getElementById('btn-reiniciar');
+  const btnVoltar = document.getElementById('btn-voltar');
+
+  // Elementos da Barra de Afinidade (adicionados no index.html)
+  const textoAfinidade = document.getElementById('texto-afinidade');
+  const barraAfinidade = document.getElementById('barra-afinidade-progresso');
 
   let usuarioAtual = { nome: '', email: '', numero: '' };
   let personagemAtivo = null;
 
-  // PERSONAGENS COM HISTÓRIAS DE AMOR INTERATIVAS
+  // ==========================================================
+  // 2. PERSONAGENS COM CAPA, SINOPSE, PRÓLOGO E NARRAÇÃO
+  // ==========================================================
   const personagens = [
     {
       id: 'gojo',
       nome: 'Satoru Gojo',
       categoria: 'Anime',
       avatar: '😎',
+      capa: 'https://unsplash.com',
+      sinopse: 'O feiticeiro mais forte abaixa a venda só para olhar nos seus olhos.',
+      prologo: 'Você esbarrou com Satoru Gojo no corredor vazio da escola jujutsu tarde da noite.',
+      afinidade: 15,
       etapa: 0,
       historico: [],
       historia: (nomeUser) => [
-        `Ei, ${nomeUser}! Finalmente você me respondeu. Estava aqui pensando em você entre uma missão e outra... ✨`,
-        `Sabe, eu sou considerado o mais forte, mas toda vez que recebo mensagem sua eu fico meio bobo. Você topa sair comigo hoje à noite? 🍨`,
-        `Perfeito! Vou passar aí às 20h. Prometo tirar a venda só pra olhar nos seus olhos, ${nomeUser} ❤️`,
-        `Você já ganhou meu coração faz tempo, ${nomeUser}. Mal posso esperar para te ver!`
+        `*Satoru abaixa os óculos escuros devagar, revelando os olhos azuis brilhantes com um sorriso de canto.* Ei, ${nomeUser}! Finalmente você apareceu. Estava aqui pensando em você entre uma missão e outra... ✨`,
+        `*Ele se aproxima um pouco mais e coloca as mãos nos bolsos.* Sabe, eu sou considerado o mais forte, mas toda vez que recebo mensagem sua eu fico meio bobo. Topa sair comigo hoje à noite? 🍨`,
+        `*Um sorriso sincero surge no rosto dele.* Perfeito! Vou passar aí às 20h. Prometo tirar a venda só pra olhar nos seus olhos, ${nomeUser} ❤️`,
+        `*Ele segura sua mão com delicadeza.* Você já ganhou meu coração faz tempo, ${nomeUser}. Mal posso esperar para te ver!`
       ]
     },
     {
@@ -55,27 +54,35 @@ document.addEventListener('DOMContentLoaded', () => {
       nome: 'Jungkook',
       categoria: 'K-Pop',
       avatar: '🎤',
+      capa: 'https://unsplash.com',
+      sinopse: 'Depois do show lotado, ele só quer ouvir a sua voz.',
+      prologo: 'O camarim está em silêncio após o ensaio. O celular dele vibra com a sua mensagem.',
+      afinidade: 20,
       etapa: 0,
       historico: [],
       historia: (nomeUser) => [
-        `Annyeong, ${nomeUser}! Acabei de sair do ensaio agora e a primeira coisa que fiz foi pegar o celular para falar com você 💜`,
-        `Escrevi uma música nova hoje e, sendo bem sincero, lembrei do seu sorriso o tempo todo. Quer ouvir primeiro antes de todo mundo? 🎶`,
-        `Você é minha inspiração favorita, ${nomeUser}. Quando a turnê acabar, quero passar o dia inteiro só com você! ✨`,
-        `Saranghae, ${nomeUser}! Nunca vou cansar de conversar com você 💜`
+        `*Jungkook enxuga o suor com uma toalha e sorri assim que vê seu nome na tela.* Annyeong, ${nomeUser}! Acabei de sair do ensaio e a primeira coisa que fiz foi pegar o celular para falar com você 💜`,
+        `*Ele dedilha alguns acordes no violão encostado no sofá.* Escrevi uma música nova hoje e, sendo bem sincero, lembrei do seu sorriso o tempo todo. Quer ouvir primeiro antes de todo mundo? 🎶`,
+        `*Os olhos dele brilham enquanto ele apoia o queixo na mão.* Você é minha inspiração favorita, ${nomeUser}. Quando a turnê acabar, quero passar o dia inteiro só com você! ✨`,
+        `*Ele manda um coração discreto para a câmera.* Saranghae, ${nomeUser}! Nunca vou cansar de conversar com você 💜`
       ]
     },
     {
       id: 'damon',
       nome: 'Damon Salvatore',
-      categoria: 'Série',
+      categoria: 'Fantasia',
       avatar: '🧛‍♂️',
+      capa: 'https://unsplash.com',
+      sinopse: 'Perigoso para a cidade inteira, mas completamente rendido por você.',
+      prologo: 'A lareira da mansão Salvatore crepita enquanto ele gira um copo de bourbon.',
+      afinidade: 10,
       etapa: 0,
       historico: [],
       historia: (nomeUser) => [
-        `Ora, ora... olha quem resolveu aparecer. Estava tomando um bourbon e pensando em você, ${nomeUser}. 🥃`,
-        `Não sou muito bom em demonstrar sentimentos, você sabe. Mas por você eu atravessaria Mystic Falls inteira sem pensar duas vezes. 🖤`,
-        `Admire minha sinceridade, ${nomeUser}: você virou minha fraqueza favorita. Vamos fugir da cidade esse fim de semana?`,
-        `Você me conquistou por completo, ${nomeUser}. Agora não tem mais volta. ❤️`
+        `*Damon ergue uma sobrancelha e dá aquele meio sorriso perigoso.* Ora, ora... olha quem resolveu aparecer. Estava tomando um bourbon e pensando em você, ${nomeUser}. 🥃`,
+        `*Ele deixa o copo na mesa e caminha até você em silêncio.* Não sou muito bom em demonstrar sentimentos, você sabe. Mas por você eu atravessaria Mystic Falls inteira sem pensar duas vezes. 🖤`,
+        `*Ele inclina levemente a cabeça.* Admire minha sinceridade, ${nomeUser}: você virou minha fraqueza favorita. Vamos fugir da cidade esse fim de semana?`,
+        `*A expressão dele suaviza completamente.* Você me conquistou por completo, ${nomeUser}. Agora não tem mais volta. ❤️`
       ]
     },
     {
@@ -83,18 +90,37 @@ document.addEventListener('DOMContentLoaded', () => {
       nome: 'Levi Ackerman',
       categoria: 'Anime',
       avatar: '⚔️',
+      capa: 'https://unsplash.com',
+      sinopse: 'Frio com todo mundo, mas sempre guarda um chá quente para você.',
+      prologo: 'A chuva cai lá fora enquanto Levi organiza os relatórios na mesa do escritório.',
+      afinidade: 10,
       etapa: 0,
       historico: [],
       historia: (nomeUser) => [
-        `Tsc. Você demorou para mandar mensagem, ${nomeUser}. Estava preocupado... quer dizer, só queria saber se você estava bem. ☕`,
-        `Não sou de falar muito, mas tomar um chá com você é a única hora do dia em que eu realmente consigo relaxar.`,
-        `Fique perto de mim, ${nomeUser}. Eu prometo proteger você de qualquer coisa nesse mundo. 🖤`,
-        `Você é a pessoa mais importante para mim, ${nomeUser}. Não esqueça disso.`
+        `*Levi cruza os braços e olha de relance para você.* Tsc. Você demorou para mandar mensagem, ${nomeUser}. Estava preocupado... quer dizer, só queria saber se você estava bem. ☕`,
+        `*Ele empurra uma xícara de chá preto na sua direção.* Não sou de falar muito, mas tomar um chá com você é a única hora do dia em que eu realmente consigo relaxar.`,
+        `*O olhar dele fica sério e protetor.* Fique perto de mim, ${nomeUser}. Eu prometo proteger você de qualquer coisa nesse mundo. 🖤`,
+        `*Ele suspira baixo, quase deixando escapar um sorriso.* Você é a pessoa mais importante para mim, ${nomeUser}. Não esqueça disso.`
       ]
     }
   ];
 
-  // ENTRADA NO APP
+  // ==========================================================
+  // 3. FORMATA *AÇÕES* EM ITÁLICO (ESTILO LIVRO INTERATIVO)
+  // ==========================================================
+  function formatarNarracao(texto) {
+    return texto.replace(/\*(.*?)\*/g, '<span class="acao-narracao">*$1*</span>');
+  }
+
+  function atualizarBarraAfinidade(valor) {
+    const porcentagem = Math.min(100, Math.max(0, valor));
+    if (textoAfinidade) textoAfinidade.textContent = `${porcentagem}%`;
+    if (barraAfinidade) barraAfinidade.style.width = `${porcentagem}%`;
+  }
+
+  // ==========================================================
+  // 4. LOGIN E VITRINE EXCLUSIVA FANFICCHAT
+  // ==========================================================
   if (formLogin) {
     formLogin.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -102,8 +128,10 @@ document.addEventListener('DOMContentLoaded', () => {
       usuarioAtual.email = document.getElementById('login-email').value.trim();
       usuarioAtual.numero = document.getElementById('login-numero').value.trim();
 
-      document.getElementById('perfil-nome').textContent = usuarioAtual.nome;
-      document.getElementById('perfil-numero').textContent = usuarioAtual.numero;
+      const perfilNome = document.getElementById('perfil-nome');
+      const perfilNumero = document.getElementById('perfil-numero');
+      if (perfilNome) perfilNome.textContent = usuarioAtual.nome;
+      if (perfilNumero) perfilNumero.textContent = usuarioAtual.numero;
 
       telaLogin.classList.add('escondido');
       appZap.classList.remove('escondido');
@@ -115,48 +143,57 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderizarContatos(lista) {
     listaContatos.innerHTML = '';
     lista.forEach((p) => {
-      const ultimaMsg = p.historico.length > 0
-        ? p.historico[p.historico.length - 1].texto
-        : 'Toque para iniciar a história...';
+      const card = document.createElement('div');
+      card.className = 'card-fanfic';
+      card.style.backgroundImage = `url('${p.capa}')`;
 
-      const li = document.createElement('li');
-      li.classList.add('contato-item');
-      if (personagemAtivo && personagemAtivo.id === p.id) {
-        li.classList.add('ativo');
-      }
-
-      li.innerHTML = `
-        <div class="avatar-contato">${p.avatar}</div>
-        <div class="contato-info">
-          <div class="contato-topo">
-            <strong>${p.nome}</strong>
-            <span class="tag-categoria">${p.categoria}</span>
-          </div>
-          <p class="contato-previa">${ultimaMsg}</p>
+      card.innerHTML = `
+        <div class="card-fanfic-topo">
+          <span class="selo-categoria">${p.categoria}</span>
+          <span class="selo-categoria" style="background: rgba(236,72,153,0.85);">💖 ${p.afinidade}%</span>
+        </div>
+        <div class="card-fanfic-info">
+          <h3 class="card-fanfic-nome">${p.nome}</h3>
+          <p class="card-fanfic-sinopse">${p.sinopse}</p>
+          <span class="card-fanfic-status">▶ Ler & Conversar</span>
         </div>
       `;
 
-      li.addEventListener('click', () => selecionarPersonagem(p));
-      listaContatos.appendChild(li);
+      card.addEventListener('click', () => selecionarPersonagem(p));
+      listaContatos.appendChild(card);
     });
   }
 
   function selecionarPersonagem(personagem) {
     personagemAtivo = personagem;
-    chatNome.textContent = `${personagem.nome} (${personagem.categoria})`;
-    chatAvatar.textContent = personagem.avatar;
-    chatStatus.textContent = 'online';
+    chatNome.textContent = personagem.nome;
+    if (chatAvatar) chatAvatar.textContent = personagem.avatar;
+    if (chatStatus) chatStatus.textContent = personagem.categoria;
+
+    // Aplica a capa do personagem no fundo do chat
+    if (telaChat && personagem.capa) {
+      telaChat.style.backgroundImage = `url('${personagem.capa}')`;
+      telaChat.classList.remove('escondido');
+    }
+
+    atualizarBarraAfinidade(personagem.afinidade);
 
     inputMensagem.disabled = false;
     btnEnviar.disabled = false;
     inputMensagem.focus();
 
-    renderizarContatos(personagens);
     atualizarTelaMensagens();
 
     if (personagem.historico.length === 0) {
       enviarRespostaDoPersonagem();
     }
+  }
+
+  if (btnVoltar) {
+    btnVoltar.addEventListener('click', () => {
+      if (telaChat) telaChat.classList.add('escondido');
+      renderizarContatos(personagens);
+    });
   }
 
   function pegarHora() {
@@ -167,14 +204,31 @@ document.addEventListener('DOMContentLoaded', () => {
     listaMensagens.innerHTML = '';
     if (!personagemAtivo) return;
 
+  // Cartão exclusivo "Prólogo" no topo da história
+    const prologoLi = document.createElement('li');
+    prologoLi.className = 'box-prologo-fanfic';
+    prologoLi.innerHTML = `
+      <div class="box-prologo-titulo">📖 Prólogo • ${personagemAtivo.nome}</div>
+      <div style="font-size: 0.85rem; color: #e2e8f0;">${personagemAtivo.prologo}</div>
+    `;
+    listaMensagens.appendChild(prologoLi);
+
+    // Mensagens da história
     personagemAtivo.historico.forEach((m) => {
       const li = document.createElement('li');
-      li.classList.add('msg', m.autor);
-      const check = m.autor === 'user' ? '<span class="check-azul">✓✓</span>' : '';
-      li.innerHTML = `
-        <div>${m.texto}</div>
-        <span class="msg-hora">${m.hora} ${check}</span>
-      `;
+      if (m.autor === 'bot') {
+        li.className = 'balao-fanfic-ia';
+        li.innerHTML = `
+          <div>${formatarNarracao(m.texto)}</div>
+          <span class="msg-hora" style="display:block; text-align:right; font-size:0.68rem; opacity:0.6; margin-top:4px;">${m.hora}</span>
+        `;
+      } else {
+        li.classList.add('msg', 'user');
+        li.innerHTML = `
+          <div>${formatarNarracao(m.texto)}</div>
+          <span class="msg-hora">${m.hora} <span class="check-azul">✓✓</span></span>
+        `;
+      }
       listaMensagens.appendChild(li);
     });
 
@@ -184,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function enviarRespostaDoPersonagem() {
     if (!personagemAtivo) return;
     const alvo = personagemAtivo;
-    chatStatus.textContent = 'digitando...';
+    if (chatStatus) chatStatus.textContent = 'escrevendo cena...';
 
     setTimeout(() => {
       const falas = alvo.historia(usuarioAtual.nome);
@@ -194,6 +248,9 @@ document.addEventListener('DOMContentLoaded', () => {
         alvo.etapa++;
       }
 
+      // Aumenta a afinidade a cada interação!
+      alvo.afinidade = Math.min(100, alvo.afinidade + 10);
+
       alvo.historico.push({
         autor: 'bot',
         texto: falaEscolhida,
@@ -201,11 +258,11 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       if (personagemAtivo && personagemAtivo.id === alvo.id) {
-        chatStatus.textContent = 'online';
+        if (chatStatus) chatStatus.textContent = alvo.categoria;
+        atualizarBarraAfinidade(alvo.afinidade);
         atualizarTelaMensagens();
       }
-      renderizarContatos(personagens);
-    }, 1000);
+    }, 900);
   }
 
   if (formMensagem) {
@@ -224,8 +281,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       inputMensagem.value = '';
       atualizarTelaMensagens();
-      renderizarContatos(personagens);
-
       enviarRespostaDoPersonagem();
     });
   }
@@ -245,14 +300,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!personagemAtivo) return;
       personagemAtivo.historico = [];
       personagemAtivo.etapa = 0;
+      personagemAtivo.afinidade = 10;
+      atualizarBarraAfinidade(10);
       atualizarTelaMensagens();
       enviarRespostaDoPersonagem();
-    });
-  }
-
-  if (btnTema) {
-    btnTema.addEventListener('click', () => {
-      document.body.classList.toggle('dark');
     });
   }
 });
